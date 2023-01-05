@@ -47,7 +47,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(${{ steps.plan.outputs.stdout }})_
+            terraform \n ${{ steps.plan.outputs.stdout }}
 
       # - name: Terraform init, plan and apply
       #   run: |
