@@ -3,19 +3,16 @@ on:
   pull_request:
     branches:
       - master
-  workflow_dispatch:
-    # Inputs the workflow expects.
-    inputs:
-      tfpath:
-        description: "TF File Path"
-        required: false
-        default: "aws_samples/create_ec2"
+    paths:
+      - terraform/**
 jobs:
   tf_code_check:
     name: Terraform Validation and Build
     runs-on: ubuntu-latest
-
-    # if: ${{ inputs.tfpath }}
+     defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,7 +41,7 @@ jobs:
 
         #        echo "** Running Terraform Apply**"
         #        terraform apply -auto-approve
-        working-directory: ${{ github.event.inputs.tfpath }}
+        # working-directory: ${{ github.event.inputs.tfpath }}
   testcheck:
     name: Test job
     runs-on: ubuntu-latest
