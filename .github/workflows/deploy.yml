@@ -1,6 +1,8 @@
 name: Comment Pull Requests
 on:
-  # Trigger the workflow on push or pull request
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
     # Inputs the workflow expects.
     inputs:
@@ -8,10 +10,6 @@ on:
         description: "TF File Path"
         required: false
         default: "aws_samples/create_ec2"
-
-  pull_request:
-    branches:
-      - master
 jobs:
   tf_code_check:
     name: Terraform Validation and Build
@@ -47,3 +45,9 @@ jobs:
         #        echo "** Running Terraform Apply**"
         #        terraform apply -auto-approve
         working-directory: ${{ github.event.inputs.tfpath }}
+  testcheck:
+    name: Test job
+    runs-on: ubuntu-latest
+    steps:
+      name: echo
+      run: echo "Ping"
