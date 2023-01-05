@@ -9,9 +9,9 @@ on:
         required: false
         default: "aws_samples/create_ec2"
 
-    pull_request:
-      branches:
-        - master
+  pull_request:
+    branches:
+      - master
 jobs:
   tf_code_check:
     name: Terraform Validation and Build
