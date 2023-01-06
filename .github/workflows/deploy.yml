@@ -1,6 +1,7 @@
 name: Upload docker image to ecr on merge
 on:
   pull_request:
+    types: [merged]
     branches:
       - master
     # paths:
@@ -8,7 +9,7 @@ on:
 jobs:
   tf_code_check:
     name: Terraform Validation and Build
-    if: github.event.pull_request.merged == 'true'
+    # if: github.event.pull_request.merged == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
