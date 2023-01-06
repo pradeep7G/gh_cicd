@@ -66,9 +66,9 @@ jobs:
           echo $IMAGE_TAG
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        # - name: Terraform destroy
-        #   id: destroy
-        #   run: terraform destroy
+        - name: Terraform destroy
+          id: destroy
+          run: terraform destroy
   testcheck:
     name: Test job
     runs-on: ubuntu-latest
