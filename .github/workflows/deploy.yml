@@ -47,7 +47,7 @@ jobs:
 
       - name: Terraform apply
         id: apply
-        run: terraform apply -input=true
+        run: terraform apply -auto-approve
 
       - name: Login to Amazon ECR
         id: login-ecr
