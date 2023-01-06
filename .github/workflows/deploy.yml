@@ -1,12 +1,14 @@
-name: Comment Pull Requests
+name: Upload image to ecr on merge
 on:
   pull_request:
     branches:
       - master
+    types: [closed]
     paths:
       - terraform/**
 jobs:
   tf_code_check:
+    if: github.event.pull_request.merged == true
     name: Terraform Validation and Build
     runs-on: ubuntu-latest
     defaults:
@@ -43,28 +45,30 @@ jobs:
         id: plan
         run: terraform plan
 
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            terraform \n ${{ steps.plan.outputs.stdout }}
+      - name: Terraform apply
+        id: apply
+        run: terraform apply
 
-      # - name: Terraform init, plan and apply
-      #   run: |
-      #     echo `pwd`
-      #     echo "tfpath ${{ github.event.inputs.tfpath }}"
-      #     echo "** Running Terraform Init**"
-      #     terraform init
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      #     echo "** Running Terraform Validate**"
-      #     terraform validate
-
-      #     echo "** Running Terraform Plan**"
-      #     terraform plan
-
-      #        echo "** Running Terraform Apply**"
-      #        terraform apply -auto-approve
-      # working-directory: ${{ github.event.inputs.tfpath }}
+      - name: Build, tag, and push docker image to Amazon ECR
+        working-directory: ../
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: TerraformTest
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          pwd
+          echo $REGISTRY
+          echo $REPOSITORY
+          echo $IMAGE_TAG
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        # - name: Terraform destroy
+        #   id: destroy
+        #   run: terraform destroy
   testcheck:
     name: Test job
     runs-on: ubuntu-latest

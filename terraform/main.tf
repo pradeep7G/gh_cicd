@@ -1,19 +1,20 @@
 terraform {
- required_providers {
-   aws = {
-     source = "hashicorp/aws"
-   }
- }
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+  }
 }
- 
+
 provider "aws" {
- region = "us-west-2"
+  region = "ap-south-1"
 }
- 
-resource "aws_instance" "test_instance" {
- ami           = "ami-830c94e3"
- instance_type = "t2.nano"
- tags = {
-   Name = "test_instance"
- }
+
+resource "aws_ecr_repository" "ecr_repo" {
+  name                 = var.repo_name
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = false
+  }
 }
