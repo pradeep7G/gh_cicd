@@ -22,8 +22,8 @@ jobs:
       - name: Configure AWS Credentials Action For GitHub Actions
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          with:
-          role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
       - name: Setup Terraform CLI
@@ -66,9 +66,10 @@ jobs:
           echo $IMAGE_TAG
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        - name: Terraform destroy
-          id: destroy
-          run: terraform destroy
+
+      - name: Terraform destroy
+        id: destroy
+        run: terraform destroy
   testcheck:
     name: Test job
     runs-on: ubuntu-latest
