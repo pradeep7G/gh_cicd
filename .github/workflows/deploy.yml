@@ -70,7 +70,7 @@ jobs:
 
       - name: Terraform destroy
         id: destroy
-        run: terraform destroy
+        run: terraform destroy -auto-approve
 
   testcheck:
     name: Test job
