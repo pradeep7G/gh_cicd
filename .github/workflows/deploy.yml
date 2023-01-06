@@ -1,23 +1,18 @@
 name: Comment Pull Requests
 on:
-  # Trigger the workflow on push or pull request
-  workflow_dispatch:
-    # Inputs the workflow expects.
-    inputs:
-      tfpath:
-        description: "TF File Path"
-        required: false
-        default: "aws_samples/create_ec2"
-
-    pull_request:
-      branches:
-        - master
+  pull_request:
+    branches:
+      - master
+    paths:
+      - terraform/**
 jobs:
   tf_code_check:
     name: Terraform Validation and Build
     runs-on: ubuntu-latest
-
-    if: ${{ inputs.tfpath }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -28,22 +23,51 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
+
       - name: Setup Terraform CLI
         uses: hashicorp/setup-terraform@v2.0.2
 
-      - name: Terraform init, plan and apply
-        run: |
-          echo `pwd`
-          echo "tfpath ${{ github.event.inputs.tfpath }}"
-          echo "** Running Terraform Init**"
-          terraform init
+      - name: Terraform init
+        id: init
+        run: terraform init
 
-          echo "** Running Terraform Validate**"
-          terraform validate
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt
 
-          echo "** Running Terraform Plan**"
-          terraform plan
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
 
-        #        echo "** Running Terraform Apply**"
-        #        terraform apply -auto-approve
-        working-directory: ${{ github.event.inputs.tfpath }}
+      - name: Terraform plan
+        id: plan
+        run: terraform plan
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            terraform \n ${{ steps.plan.outputs.stdout }}
+
+      # - name: Terraform init, plan and apply
+      #   run: |
+      #     echo `pwd`
+      #     echo "tfpath ${{ github.event.inputs.tfpath }}"
+      #     echo "** Running Terraform Init**"
+      #     terraform init
+
+      #     echo "** Running Terraform Validate**"
+      #     terraform validate
+
+      #     echo "** Running Terraform Plan**"
+      #     terraform plan
+
+      #        echo "** Running Terraform Apply**"
+      #        terraform apply -auto-approve
+      # working-directory: ${{ github.event.inputs.tfpath }}
+  testcheck:
+    name: Test job
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: echo "Ping"
