@@ -54,7 +54,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push docker image to Amazon ECR
-        working-directory: ../
+        # working-directory: ../
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: terraformtest
@@ -65,6 +65,8 @@ jobs:
           echo $REPOSITORY
           echo $IMAGE_TAG
           ls -l
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Terraform destroy
         id: destroy
