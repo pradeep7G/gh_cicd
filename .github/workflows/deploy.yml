@@ -70,6 +70,7 @@ jobs:
       - name: Terraform destroy
         id: destroy
         run: terraform destroy
+        
   testcheck:
     name: Test job
     runs-on: ubuntu-latest
