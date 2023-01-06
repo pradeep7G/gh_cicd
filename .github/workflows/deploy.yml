@@ -1,10 +1,10 @@
-name: Upload image to ecr on merge
+name: Upload docker image to ecr on merge
 on:
   pull_request:
     branches:
       - master
-    paths:
-      - terraform/**
+    # paths:
+    #   - terraform/**
 jobs:
   tf_code_check:
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
